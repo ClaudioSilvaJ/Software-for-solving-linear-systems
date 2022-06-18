@@ -4,7 +4,5 @@ Web site was developed to solve linear systems of size NxN
 This project was developed using the following technologies:
 <br>
 - HTML
-<br>
 - CSS
-<br>
 - PyScript
