@@ -1,4 +1,4 @@
-# Software for solving linear systems.
+# Web site for solving linear systems.
 Web site was developed to solve linear systems of size NxN.
 <br>
 <br>
