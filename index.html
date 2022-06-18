@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css"/>
+    <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+    <title>Solução de sistemas lineares</title>
+    <link rel="stylesheet" type="text/css" href="style.css" />
+    <link rel="icon" type="imagem/png" href="icon.png">
+    </head>
+
+<body> 
+    <header>
+        Software para solução de sistemas lineares
+    </header>
+        <br>
+        <div>Entre com o numero de colunas de sua matriz:</div>
+        <input class="inputs" type="text" id="matriz-col-size"/>
+        <br>
+        <div>Entre com o numero de linhas de sua matriz:</div>
+        <input class="inputs"  type="text" id="matriz-lin-size"/>
+        <br>
+        <div>Entre com sua matriz:</div>
+        <textarea class="inputs"  rows="15" cols="100" type="text" id="matriz-input"></textarea>
+        <br>
+        <button class="custom-btn btn-7" id="submit-button" type="submit" pys-onClick="entrarMatriz">Calcular</button>
+        <div id ="test-output"></div>
+    <py-script>
+        from js import console
+
+        teste = 1 
+        x = 1 
+
+        def linebreak():
+            linebre = document.createElement("br")
+            linebre.classList.add('linebreak')
+            document.body.appendChild(linebre)
+
+        def appendEscrever(write):
+            p = document.createElement("p")
+            p.classList.add('resultados')
+            p.innerHTML = write
+            document.body.append(p)
+
+        def organizaMatriz(matriz):
+            teste = [[]*len(matriz[0])]*len(matriz)
+            aux = len(matriz) - 1
+            aux2 = 0
+            pula = 0
+            for coluna in range(len(matriz)):
+                for linha in range(len(matriz)-pula):
+                    if(matriz[linha+pula][coluna] == 0.0):
+                        teste[aux] = matriz[linha+pula]
+                        aux = aux - 1
+                    else:
+                        teste[aux2+pula] = matriz[linha+pula]
+                        aux2 = aux2 + 1
+                matriz = teste.copy()
+                
+                aux = len(matriz) - 1
+                pula = pula + aux2
+                aux2 = 0
+            return matriz
+
+        def resolveMatriz(matriz):
+            resultados = [0.0]*len(matriz)
+            for z in range(len(matriz[0])-1):
+                resultados[z] = matriz[z][len(matriz)]
+            result = 0.0
+            for z in range(len(matriz[0])-1):
+                count = len(matriz)-1 - z
+                if(z > 0):
+                    for y in range(z):
+                        teste = 0
+                        auxcount = len(matriz)-1 - y
+                        teste = matriz[count][auxcount] * resultados[auxcount]* -1 - teste + resultados[count]
+                        resultados[count] = teste
+                try:
+                    result = resultados[count] / matriz[count][count] #round arredonda o numero para 3 casas
+                except:
+                    printMatriz(matriz)
+                resultados[count] = result
+            try:
+                estado = resultados.index(0.0)
+            except:
+                estado = -1
+            
+            if(estado == -1):
+                appendEscrever('-----------------------------------------------------------------')
+                appendEscrever('Resultados: ')
+                linebreak()
+                for z in range(len(resultados)):
+                    soma = z + 1
+                    appendEscrever("x{}: {}".format(soma,resultados[z]))
+                    #appendEscrever(resultados[z])
+                    linebreak()
+            else:
+                appendEscrever('-----------------------------------------------------------------')
+                appendEscrever('Não há resultado exato!')
+                printMatriz(matriz)
+        
+        def printMatriz(matriz):
+            h1Element = document.createElement("h1")
+            appendEscrever('-----------------------------------------------------------------')
+            linebreak()
+            for z in range(len(matriz)):
+                appendEscrever(<h1>matriz[z]</h1>)
+                linebreak()
+        
+        def comeca(matriz):
+            aux = 2
+            matriz = organizaMatriz(matriz)
+            print(matriz)
+            matrizSubtraida = 1
+            colunaSubtraida = 0
+            matrizSubUsada = 0
+            coefMultiplica = 1
+            resultSub = 1
+            while colunaSubtraida < (len(matriz[0]) - aux):
+                printMatriz(matriz)
+                try:
+                    coefMultiplica = matriz[matrizSubtraida][colunaSubtraida] / matriz[matrizSubUsada][colunaSubtraida]
+                except:
+                    coefMultiplica = 1
+                resultSub = matriz[matrizSubtraida][colunaSubtraida] - (coefMultiplica * matriz[matrizSubUsada][colunaSubtraida])
+                if(resultSub >= 0 and resultSub < 0.001 and resultSub > -0.001):
+                    resultSub = 0
+                if(resultSub == 0):
+                    appendEscrever("x{} - {}*x{}".format(matrizSubtraida+1, coefMultiplica, matrizSubUsada+1))
+                    for z in range(len(matriz[0])):
+                        
+                        matriz[matrizSubtraida][z] = matriz[matrizSubtraida][z] - coefMultiplica*(matriz[matrizSubUsada][z])
+                        if(matriz[matrizSubtraida][z] >= 0 and matriz[matrizSubtraida][z] < 0.001 and matriz[matrizSubtraida][z] > -0.001):
+                            matriz[matrizSubtraida][z] = 0
+                    if(matrizSubtraida == (len(matriz) - 1)):
+                        colunaSubtraida = colunaSubtraida + 1
+                        matrizSubUsada = 0 + colunaSubtraida
+                        matrizSubtraida = 1 + colunaSubtraida
+                        #print('true')
+                    else:
+                        if(colunaSubtraida != 0):
+                            matrizSubusada = colunaSubtraida
+                        else:
+                            matrizSubUsada = 0
+                        matrizSubtraida = matrizSubtraida + 1
+                        #print('else')
+                    #print('Coluna: ', colunaSubtraida)
+                    #print('matriz usada: ', matrizSubUsada)
+                    #print('matriz subtraida: ', matrizSubtraida)
+                else:
+                    matrizSubUsada = matrizSubUsada + 1
+            printMatriz(matriz)
+            if(aux == 2):
+                resolveMatriz(matriz)
+
+        
+        def entrarMatriz(*args, **kwargs):
+            delResultadosAnt = document.getElementsByClassName('resultados')
+            delLinesBreak = document.getElementsByClassName('linebreak')
+            for h in range(len(delLinesBreak)):
+                delLinesBreak[0].remove()
+            for k in range(len(delResultadosAnt)):
+                delResultadosAnt[0].remove()
+            matriz = []
+            n_linhas = int(Element('matriz-lin-size').element.value)
+            n_colunas = int(Element('matriz-col-size').element.value)
+            aux = Element('matriz-input').element.value
+
+            for y in range(n_linhas):
+                linha = []
+                aux = Element('matriz-input').element.value.split("\n")
+                linhaAtual = list(map(float, aux[y].split()))
+                for x in range(n_colunas):
+                    linha.append(linhaAtual[x])
+                matriz.append(linha)
+            comeca(matriz)
+    </py-script>
+
+
+</body>
+</html>
