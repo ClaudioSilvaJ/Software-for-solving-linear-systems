@@ -4,5 +4,7 @@
 ## This project was developed using the following technologies:
 <br>
 - HTML
+<br>
 - CSS
+<br>
 - PyScript
